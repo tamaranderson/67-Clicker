@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>67 Clicker</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 20%, #FFD93D 40%, #6BCF7F 60%, #4D9DE0 80%, #BB6BD9 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 2vh;
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1 {
+            font-size: 6vh;
+            margin-bottom: 1vh;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FFD700, #FF8C00, #FF1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.3),
+                         5px 5px 10px rgba(0, 0, 0, 0.3);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+            letter-spacing: 2px;
+        }
+
+        .score-display {
+            font-size: 12vh;
+            font-weight: 900;
+            margin: 2vh 0;
+            background: linear-gradient(135deg, #00F5FF, #0080FF, #8000FF, #FF00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8))
+                    drop-shadow(3px 3px 10px rgba(255, 0, 255, 0.6));
+            animation: pulse 2s ease-in-out infinite, rainbowGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes rainbowGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px #FF00FF) drop-shadow(0 0 40px #FF00FF); }
+            25% { filter: drop-shadow(0 0 20px #00FFFF) drop-shadow(0 0 40px #00FFFF); }
+            50% { filter: drop-shadow(0 0 20px #FFFF00) drop-shadow(0 0 40px #FFFF00); }
+            75% { filter: drop-shadow(0 0 20px #00FF00) drop-shadow(0 0 40px #00FF00); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .tap-area {
+            width: 90vw;
+            height: 40vh;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(0, 255, 255, 0.2) 50%,
+                rgba(255, 0, 255, 0.2) 100%);
+            border-radius: 4vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5),
+                        0 0 50px rgba(255, 0, 255, 0.3),
+                        0 10px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 5px solid transparent;
+            background-clip: padding-box;
+            margin: 0 auto;
+            animation: borderRainbow 3s linear infinite;
+        }
+
+        @keyframes borderRainbow {
+            0% { box-shadow: 0 0 30px #FF0000, 0 0 50px #FF0000; }
+            14% { box-shadow: 0 0 30px #FF7F00, 0 0 50px #FF7F00; }
+            28% { box-shadow: 0 0 30px #FFFF00, 0 0 50px #FFFF00; }
+            42% { box-shadow: 0 0 30px #00FF00, 0 0 50px #00FF00; }
+            57% { box-shadow: 0 0 30px #0000FF, 0 0 50px #0000FF; }
+            71% { box-shadow: 0 0 30px #4B0082, 0 0 50px #4B0082; }
+            85% { box-shadow: 0 0 30px #9400D3, 0 0 50px #9400D3; }
+            100% { box-shadow: 0 0 30px #FF0000, 0 0 50px #FF0000; }
+        }
+
+        .numbers {
+            font-size: 16vh;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.4;
+            user-select: none;
+            pointer-events: none;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        .instruction {
+            margin-top: 2vh;
+            font-size: 2.2vh;
+            font-weight: 700;
+            max-width: 90vw;
+            background: linear-gradient(90deg, #FF6B00, #FFD700);
+            padding: 1.5vh 3vw;
+            border-radius: 5vh;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6),
+                        0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 3px solid #FFFF00;
+        }
+
+        .instruction::before {
+            content: "✌️ ";
+        }
+
+        .instruction::after {
+            content: " ✌️";
+        }
+
+        .stats {
+            margin-top: 2vh;
+            display: flex;
+            gap: 3vw;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.35) 0%,
+                rgba(255, 215, 0, 0.25) 100%);
+            padding: 1.8vh 4vw;
+            border-radius: 3vh;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            min-width: 28vw;
+            border: 3px solid;
+            border-image: linear-gradient(90deg, #FF00FF, #00FFFF, #FFFF00, #FF00FF) 1;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5),
+                        0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: statGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes statGlow {
+            0% { box-shadow: 0 0 15px rgba(255, 0, 255, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.6); }
+        }
+
+        .stat-label {
+            font-size: 1.9vh;
+            font-weight: 700;
+            margin-bottom: 0.5vh;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-label::before {
+            content: "👆 ";
+            font-size: 2vh;
+        }
+
+        .stat:last-child .stat-label::before {
+            content: "🔥 ";
+        }
+
+        .stat-value {
+            font-size: 3.5vh;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FFD700, #FF8C00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .feedback {
+            position: absolute;
+            font-size: 8vh;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FFD700, #FF8C00, #FF1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+            filter: drop-shadow(0 0 15px #FFD700) drop-shadow(0 0 25px #FF1493);
+        }
+
+        .feedback::before {
+            content: "🎉 ";
+        }
+
+        .feedback::after {
+            content: " 🎉";
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        .finger-indicator {
+            position: absolute;
+            width: 10vh;
+            height: 10vh;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 0, 0.8) 0%,
+                rgba(255, 128, 0, 0.6) 50%,
+                rgba(255, 0, 255, 0.2) 100%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            animation: fingerPulse 0.3s ease-out;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.8),
+                        0 0 50px rgba(255, 0, 255, 0.6);
+        }
+
+        .finger-indicator::before {
+            content: "⭐";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5vh;
+            animation: starSpin 0.5s ease-out;
+        }
+
+        @keyframes starSpin {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(0); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+        }
+
+        @keyframes fingerPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .success-flash {
+            animation: successFlash 0.3s ease-out;
+        }
+
+        @keyframes successFlash {
+            0%, 100% {
+                background: linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.3) 0%,
+                    rgba(0, 255, 255, 0.2) 50%,
+                    rgba(255, 0, 255, 0.2) 100%);
+            }
+            50% {
+                background: linear-gradient(135deg, 
+                    rgba(255, 255, 0, 0.6) 0%,
+                    rgba(0, 255, 255, 0.5) 50%,
+                    rgba(255, 0, 255, 0.6) 100%);
+                box-shadow: 0 0 50px rgba(255, 255, 0, 0.9),
+                            0 0 80px rgba(255, 0, 255, 0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>67 Clicker</h1>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Total Taps</div>
+                <div class="stat-value" id="totalTaps">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Skibidi Rate</div>
+                <div class="stat-value" id="successRate">0%</div>
+            </div>
+        </div>
+
+        <div class="score-display" id="score">0</div>
+        
+        <div class="tap-area" id="tapArea">
+            <div class="numbers">6 7</div>
+        </div>
+        
+        <div class="instruction">
+            Tap with TWO fingers simultaneously to score!
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let score = 0;
+        let totalTaps = 0;
+        let successfulTaps = 0;
+        let currentStreak = 0;
+        let bestStreak = 0;
+        let activeTouches = new Set();
+
+        // DOM elements
+        const scoreDisplay = document.getElementById('score');
+        const tapArea = document.getElementById('tapArea');
+        const totalTapsDisplay = document.getElementById('totalTaps');
+        const successRateDisplay = document.getElementById('successRate');
+
+        // Load saved data
+        loadGameData();
+
+        // Touch event handler
+        tapArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            
+            const touches = e.touches;
+            const touchCount = touches.length;
+
+            // Store active touch identifiers
+            activeTouches.clear();
+            for (let i = 0; i < touches.length; i++) {
+                activeTouches.add(touches[i].identifier);
+            }
+
+            // Visual feedback for each touch
+            for (let i = 0; i < touches.length; i++) {
+                const touch = touches[i];
+                const rect = tapArea.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                createFingerIndicator(x, y);
+            }
+
+            // Check if exactly 2 fingers touched simultaneously
+            if (touchCount === 2) {
+                handleSuccessfulTap();
+            } else {
+                handleFailedTap();
+            }
+        });
+
+        tapArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        });
+
+        tapArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        });
+
+        function handleSuccessfulTap() {
+            score++;
+            totalTaps++;
+            successfulTaps++;
+            currentStreak++;
+            
+            if (currentStreak > bestStreak) {
+                bestStreak = currentStreak;
+            }
+
+            updateDisplay();
+            createFeedback('+1');
+            flashSuccess();
+            saveGameData();
+        }
+
+        function handleFailedTap() {
+            totalTaps++;
+            currentStreak = 0;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            scoreDisplay.textContent = score;
+            totalTapsDisplay.textContent = totalTaps;
+            
+            const rate = totalTaps > 0 ? ((successfulTaps / totalTaps) * 100).toFixed(1) : 0;
+            successRateDisplay.textContent = rate + '%';
+        }
+
+        function createFeedback(text) {
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback';
+            feedback.textContent = text;
+            
+            const rect = tapArea.getBoundingClientRect();
+            feedback.style.left = (rect.width / 2) + 'px';
+            feedback.style.top = (rect.height / 2) + 'px';
+            
+            tapArea.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 1000);
+        }
+
+        function createFingerIndicator(x, y) {
+            const indicator = document.createElement('div');
+            indicator.className = 'finger-indicator';
+            indicator.style.left = x + 'px';
+            indicator.style.top = y + 'px';
+            
+            tapArea.appendChild(indicator);
+            
+            setTimeout(() => {
+                indicator.remove();
+            }, 300);
+        }
+
+        function flashSuccess() {
+            tapArea.classList.add('success-flash');
+            setTimeout(() => {
+                tapArea.classList.remove('success-flash');
+            }, 300);
+        }
+
+        function saveGameData() {
+            const gameData = {
+                score,
+                totalTaps,
+                successfulTaps,
+                bestStreak
+            };
+            localStorage.setItem('67-clicker-data', JSON.stringify(gameData));
+        }
+
+        function loadGameData() {
+            const saved = localStorage.getItem('67-clicker-data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                score = data.score || 0;
+                totalTaps = data.totalTaps || 0;
+                successfulTaps = data.successfulTaps || 0;
+                bestStreak = data.bestStreak || 0;
+                updateDisplay();
+            }
+        }
+
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .catch(err => console.log('Service worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>

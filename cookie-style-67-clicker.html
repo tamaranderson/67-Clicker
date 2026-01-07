@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2d1b00">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>67 Clicker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+            background: #2d1b00;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(139,69,19,.1) 35px, rgba(139,69,19,.1) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(101,67,33,.1) 35px, rgba(101,67,33,.1) 70px);
+            min-height: 100vh;
+            color: white;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .game-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .left-panel {
+            width: 35vw;
+            background: linear-gradient(to bottom, #2b1a0a 0%, #1a0f06 100%);
+            border-right: 4px solid #8B4513;
+            box-shadow: inset -10px 0 20px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            padding: 2vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #4a2511 0%, #2d1508 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 2vh;
+            padding: 2vh;
+            background: rgba(139, 69, 19, 0.3);
+            border-radius: 15px;
+            border: 2px solid #8B4513;
+        }
+
+        h1 {
+            font-size: 4vh;
+            margin: 0;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 0px #8B4513, 5px 5px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .score-section {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2vh;
+            border-radius: 15px;
+            border: 3px solid #FFD700;
+            margin-bottom: 2vh;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .score-label {
+            font-size: 2vh;
+            color: #DEB887;
+            margin-bottom: 0.5vh;
+        }
+
+        .score-display {
+            font-size: 8vh;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 0px #8B4513, 3px 3px 10px rgba(255, 215, 0, 0.5);
+            line-height: 1;
+        }
+
+        .stats-section {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2vh;
+            border-radius: 15px;
+            border: 2px solid #8B4513;
+            margin-bottom: 2vh;
+        }
+
+        .stats-title {
+            font-size: 2.5vh;
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 1.5vh;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1vh;
+            margin-bottom: 1vh;
+            background: rgba(139, 69, 19, 0.2);
+            border-radius: 8px;
+            border: 1px solid #654321;
+        }
+
+        .stat-label {
+            color: #DEB887;
+            font-size: 1.8vh;
+        }
+
+        .stat-value {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 2vh;
+        }
+
+        .tap-area {
+            width: 50vh;
+            height: 50vh;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 4px solid #FFD700;
+        }
+
+        .tap-area:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .numbers {
+            font-size: 20vh;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow: 
+                3px 3px 0px #8B4513,
+                5px 5px 10px rgba(0, 0, 0, 0.7),
+                0 0 20px rgba(255, 215, 0, 0.5);
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .instruction {
+            position: absolute;
+            bottom: 3vh;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1.5vh 3vw;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            font-size: 2vh;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .feedback {
+            position: absolute;
+            font-size: 5vh;
+            font-weight: bold;
+            color: #90EE90;
+            animation: floatUp 1.5s ease-out forwards;
+            pointer-events: none;
+            text-shadow: 
+                2px 2px 0px #2d5016,
+                3px 3px 5px rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .special-image {
+            position: absolute;
+            animation: specialPopup 2s ease-out forwards;
+            pointer-events: none;
+            z-index: 1001;
+            max-width: 30vh;
+            max-height: 30vh;
+            border: 5px solid #FFD700;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+                        0 0 50px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes specialPopup {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(10deg);
+                opacity: 1;
+            }
+            70% {
+                transform: scale(1.1) rotate(-5deg);
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-15vh) scale(1.5);
+            }
+        }
+
+        .finger-indicator {
+            position: absolute;
+            width: 8vh;
+            height: 8vh;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255, 215, 0, 0.6) 0%,
+                rgba(255, 140, 0, 0.3) 50%,
+                transparent 100%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            animation: fingerPulse 0.5s ease-out;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes fingerPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        .success-flash {
+            animation: successFlash 0.3s ease-out !important;
+        }
+
+        @keyframes successFlash {
+            0%, 100% {
+                box-shadow: 
+                    0 10px 30px rgba(0, 0, 0, 0.5),
+                    inset -10px -10px 20px rgba(0, 0, 0, 0.3),
+                    inset 10px 10px 20px rgba(255, 228, 181, 0.5);
+            }
+            50% {
+                box-shadow: 
+                    0 0 50px rgba(255, 215, 0, 0.9),
+                    0 0 80px rgba(144, 238, 144, 0.7),
+                    inset 0 0 30px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                width: 100vw;
+                height: auto;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 4px solid #8B4513;
+            }
+            
+            .right-panel {
+                height: 60vh;
+            }
+            
+            .tap-area {
+                width: 40vh;
+                height: 40vh;
+            }
+            
+            .numbers {
+                font-size: 15vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="game-header">
+                <h1>67 Clicker</h1>
+            </div>
+
+            <div class="score-section">
+                <div class="score-label">67 pairs tapped</div>
+                <div class="score-display" id="score">0</div>
+            </div>
+
+            <div class="stats-section">
+                <div class="stats-title">📊 Statistics</div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Taps</span>
+                    <span class="stat-value" id="totalTaps">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Skibidi Rate</span>
+                    <span class="stat-value" id="successRate">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Best Streak</span>
+                    <span class="stat-value" id="bestStreak">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Special 67s Hit</span>
+                    <span class="stat-value" id="special67Count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="tap-area" id="tapArea">
+                <div class="numbers">6 7</div>
+            </div>
+            
+            <div class="instruction">
+                ✌️ Tap with TWO fingers simultaneously to score! ✌️
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let score = 0;
+        let totalTaps = 0;
+        let successfulTaps = 0;
+        let currentStreak = 0;
+        let bestStreak = 0;
+        let special67Count = 0;
+        let activeTouches = new Set();
+
+        // Special images for numbers ending in 67
+        // These should be paths to your images - user will provide them
+        const specialImages = [
+            'special1.jpg',
+            'special2.jpg',
+            'special3.jpg',
+            'special4.jpg',
+            'special5.jpg'
+        ];
+
+        // DOM elements
+        const scoreDisplay = document.getElementById('score');
+        const tapArea = document.getElementById('tapArea');
+        const totalTapsDisplay = document.getElementById('totalTaps');
+        const successRateDisplay = document.getElementById('successRate');
+        const bestStreakDisplay = document.getElementById('bestStreak');
+        const special67CountDisplay = document.getElementById('special67Count');
+
+        // Load saved data
+        loadGameData();
+
+        // Touch event handler
+        tapArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            
+            const touches = e.touches;
+            const touchCount = touches.length;
+
+            // Store active touch identifiers
+            activeTouches.clear();
+            for (let i = 0; i < touches.length; i++) {
+                activeTouches.add(touches[i].identifier);
+            }
+
+            // Visual feedback for each touch
+            for (let i = 0; i < touches.length; i++) {
+                const touch = touches[i];
+                const rect = tapArea.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                createFingerIndicator(x, y);
+            }
+
+            // Check if exactly 2 fingers touched simultaneously
+            if (touchCount === 2) {
+                handleSuccessfulTap();
+            } else {
+                handleFailedTap();
+            }
+        });
+
+        tapArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        });
+
+        tapArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        });
+
+        function handleSuccessfulTap() {
+            score++;
+            totalTaps++;
+            successfulTaps++;
+            currentStreak++;
+            
+            if (currentStreak > bestStreak) {
+                bestStreak = currentStreak;
+            }
+
+            // Check if score ends in 67
+            if (score.toString().endsWith('67')) {
+                showSpecialImage();
+                special67Count++;
+            }
+
+            updateDisplay();
+            createFeedback('+1');
+            flashSuccess();
+            saveGameData();
+        }
+
+        function handleFailedTap() {
+            totalTaps++;
+            currentStreak = 0;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            scoreDisplay.textContent = score;
+            totalTapsDisplay.textContent = totalTaps;
+            
+            const rate = totalTaps > 0 ? ((successfulTaps / totalTaps) * 100).toFixed(1) : 0;
+            successRateDisplay.textContent = rate + '%';
+            
+            bestStreakDisplay.textContent = bestStreak;
+            special67CountDisplay.textContent = special67Count;
+        }
+
+        function createFeedback(text) {
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback';
+            feedback.textContent = text;
+            
+            const rect = tapArea.getBoundingClientRect();
+            feedback.style.left = (rect.width / 2) + 'px';
+            feedback.style.top = (rect.height / 2) + 'px';
+            
+            tapArea.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 1500);
+        }
+
+        function showSpecialImage() {
+            // Pick a random image from the list
+            const randomImage = specialImages[Math.floor(Math.random() * specialImages.length)];
+            
+            const imgElement = document.createElement('img');
+            imgElement.src = randomImage;
+            imgElement.className = 'special-image';
+            
+            const rect = tapArea.getBoundingClientRect();
+            imgElement.style.left = (rect.width / 2 - 15) + 'vh';
+            imgElement.style.top = (rect.height / 2 - 15) + 'vh';
+            
+            // Add to right panel so it appears on top of everything
+            document.querySelector('.right-panel').appendChild(imgElement);
+            
+            // Play a sound effect (optional)
+            playSpecialSound();
+            
+            setTimeout(() => {
+                imgElement.remove();
+            }, 2000);
+        }
+
+        function playSpecialSound() {
+            // Optional: add a sound effect
+            // const audio = new Audio('special-sound.mp3');
+            // audio.play().catch(() => {});
+        }
+
+        function createFingerIndicator(x, y) {
+            const indicator = document.createElement('div');
+            indicator.className = 'finger-indicator';
+            indicator.style.left = x + 'px';
+            indicator.style.top = y + 'px';
+            
+            tapArea.appendChild(indicator);
+            
+            setTimeout(() => {
+                indicator.remove();
+            }, 500);
+        }
+
+        function flashSuccess() {
+            tapArea.classList.add('success-flash');
+            setTimeout(() => {
+                tapArea.classList.remove('success-flash');
+            }, 300);
+        }
+
+        function saveGameData() {
+            const gameData = {
+                score,
+                totalTaps,
+                successfulTaps,
+                bestStreak,
+                special67Count
+            };
+            localStorage.setItem('67-clicker-data', JSON.stringify(gameData));
+        }
+
+        function loadGameData() {
+            const saved = localStorage.getItem('67-clicker-data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                score = data.score || 0;
+                totalTaps = data.totalTaps || 0;
+                successfulTaps = data.successfulTaps || 0;
+                bestStreak = data.bestStreak || 0;
+                special67Count = data.special67Count || 0;
+                updateDisplay();
+            }
+        }
+
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .catch(err => console.log('Service worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
