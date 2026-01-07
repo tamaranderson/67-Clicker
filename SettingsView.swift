@@ -11,7 +11,14 @@ struct SettingsView: View {
         NavigationView {
             ZStack {
                 LinearGradient(
-                    colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
+                    colors: [
+                        Color(hex: "FF6B9D"),  // Bright pink
+                        Color(hex: "FFA07A"),  // Light coral
+                        Color(hex: "FFD93D"),  // Bright yellow
+                        Color(hex: "6BCF7F"),  // Bright green
+                        Color(hex: "4D9DE0"),  // Bright blue
+                        Color(hex: "BB6BD9")   // Bright purple
+                    ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )

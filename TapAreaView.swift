@@ -9,37 +9,110 @@ struct TapAreaView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background
-                RoundedRectangle(cornerRadius: 30)
-                    .fill(Color.white.opacity(showSuccess ? 0.3 : 0.1))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 3)
+                // Colorful background with glow
+                RoundedRectangle(cornerRadius: 35)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.4),
+                                Color.cyan.opacity(0.3),
+                                Color.pink.opacity(0.3)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
                     )
-                    .shadow(color: .black.opacity(0.3), radius: 10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 35)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        .red, .orange, .yellow, .green, .cyan, .blue, .purple, .pink
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 5
+                            )
+                    )
+                    .shadow(color: .cyan.opacity(0.6), radius: 20)
+                    .shadow(color: .pink.opacity(0.6), radius: 20)
+                    .shadow(color: showSuccess ? .yellow.opacity(0.9) : .clear, radius: 30)
                 
-                // Numbers
-                Text("6 7")
-                    .font(.system(size: geometry.size.height * 0.3, weight: .bold))
-                    .foregroundColor(.white.opacity(0.3))
+                // Playful numbers with multiple colors
+                HStack(spacing: 10) {
+                    Text("6")
+                        .font(.system(size: geometry.size.height * 0.35, weight: .black, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.red, .orange, .yellow],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .shadow(color: .white.opacity(0.5), radius: 3)
+                    
+                    Text("7")
+                        .font(.system(size: geometry.size.height * 0.35, weight: .black, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.cyan, .blue, .purple],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .shadow(color: .white.opacity(0.5), radius: 3)
+                }
+                .opacity(0.4)
                 
-                // Touch indicators
+                // Colorful touch indicators with stars
                 ForEach(touchPoints.indices, id: \.self) { index in
-                    Circle()
-                        .fill(Color.white.opacity(0.5))
-                        .frame(width: 60, height: 60)
-                        .position(touchPoints[index])
-                        .transition(.scale.combined(with: .opacity))
+                    ZStack {
+                        // Outer glow
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        .yellow.opacity(0.8),
+                                        .orange.opacity(0.4),
+                                        .clear
+                                    ],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 50
+                                )
+                            )
+                            .frame(width: 100, height: 100)
+                        
+                        // Star emoji
+                        Text(index == 0 ? "⭐" : "✨")
+                            .font(.system(size: 50))
+                    }
+                    .position(touchPoints[index])
+                    .transition(.scale.combined(with: .opacity))
                 }
                 
-                // Success feedback
+                // Success feedback with explosion effect
                 if showSuccess {
-                    Text("+1")
-                        .font(.system(size: 60, weight: .bold))
-                        .foregroundColor(.green)
-                        .shadow(color: .black.opacity(0.5), radius: 5)
-                        .offset(y: feedbackOffset)
-                        .transition(.scale.combined(with: .opacity))
+                    VStack(spacing: 5) {
+                        Text("🎉")
+                            .font(.system(size: 40))
+                        Text("+1")
+                            .font(.system(size: 70, weight: .black, design: .rounded))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.yellow, .orange, .pink],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .shadow(color: .white, radius: 5)
+                            .shadow(color: .green, radius: 10)
+                        Text("🎉")
+                            .font(.system(size: 40))
+                    }
+                    .offset(y: feedbackOffset)
+                    .transition(.scale.combined(with: .opacity))
                 }
             }
             .contentShape(Rectangle())
